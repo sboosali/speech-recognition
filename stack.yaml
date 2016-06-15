@@ -1,7 +1,16 @@
-resolver: lts-6.1
+resolver: lts-6.2
 
 packages:
 - .
 
-extra-deps: []
+- ../spiros
+- ../microphone
+
+extra-deps:
+- spiros-0.0.0
+
+# microphone
+- microphone-0.0.0
+- portaudio-0.2.4
+- binary-0.8.2.1
 
