@@ -12,8 +12,12 @@ import Prelude.Spiros
 -- non-re-exported
 import Language.Haskell.TH.Quote (QuasiQuoter)
 import Data.Aeson.QQ
+import qualified Data.Text as T
 
 --------------------------------------------------------------------------------
+
+tshow :: (Show a) => a -> T.Text
+tshow = show >>> T.pack
 
 {-| JSON literals.
 

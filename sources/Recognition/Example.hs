@@ -2,7 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-} -- to test inference
 
 module Recognition.Example where
-import Recognition()
+import Recognition
 
 import Pipes
 import Pipes.HTTP
@@ -21,6 +21,10 @@ https://hackage.haskell.org/package/http-client-0.4.28/docs/Network-HTTP-Client.
 -}
 main = do
     putStrLn "(Recognition.Example...)"
+
+    example_Recognition_Google
+
+example_Pipes_HTTP = do
 
     _req <- parseUrl "https://www.example.com"
     let req = post _req
