@@ -1,28 +1,35 @@
 module Recognition.Extra
- ( module Recognition.Extra
- , module X
+ ( module Prelude.Spiros    -- My custom Prélude
+ , module Recognition.Extra -- Extra definitions
+-- , module X                 -- Extra modules
  ) where
 
-import Control.DeepSeq as X (NFData)
-import Data.Hashable as X (Hashable)
-import Data.Semigroup as X (Semigroup)
+--------------------------------------------------------------------------------
+-- re-exported
+import Prelude.Spiros
 
-import GHC.Generics as X (Generic)
-import Data.Data as X (Data)
+--------------------------------------------------------------------------------
+-- non-re-exported
+import Language.Haskell.TH.Quote (QuasiQuoter)
+import Data.Aeson.QQ
 
-import Control.Arrow as X ((>>>))
-import Data.Function as X ((&))
-import Data.Foldable as X (traverse_)
+--------------------------------------------------------------------------------
 
-nothing :: (Monad m) => m ()
-nothing = return ()
+{-| JSON literals.
 
-maybe2bool :: Maybe a -> Bool
-maybe2bool = maybe False (const True)
+e.g.
 
-either2maybe :: Either e a -> Maybe a
-either2maybe = either (const Nothing) Just
+@
+>>> :set -XQuasiQuotes
+>>> let example key value = [json| {$key: #{value}, "falsy": [0, False, null, {}]} |]
+@
 
-either2bool :: Either e a -> Bool
-either2bool = either (const False) (const True)
+@
+= 'aesonQQ'
+@
 
+-}
+json :: QuasiQuoter
+json = aesonQQ
+
+--------------------------------------------------------------------------------

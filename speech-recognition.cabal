@@ -52,47 +52,56 @@ library
                      ScopedTypeVariables StandaloneDeriving
 
  exposed-modules:
-  Recognition
-  Recognition.Types
-
+                 Recognition
+                 Recognition.Types
+                 Recognition.Google
+                 Recognition.Google.Types
 -- other-modules:
-  Recognition.Extra
-  Recognition.Example
+                 Recognition.Extra
+                 Recognition.Example
 
  build-depends:
-    base >=4.7 && <5
+               base >=4.7 && <5
 
-  -- ,
-  -- , transformers
-  -- , mtl
-  -- , containers
-  -- , bytestring
-  -- , stm
-  -- , template-haskell
+             , spiros
+             , microphone
 
-  , deepseq
-  , hashable
-  , semigroups
-  -- ,
-  -- , lens
-  -- , exceptions
-  -- , free
-  -- , bifunctors
-  -- , profunctors
-  -- , either
-  -- , pipes
-  -- , formatting
-  -- , servant
-  -- , Earley
-  -- , split
-  -- , interpolatedstring-perl6
-  -- , wl-pprint-text
-  -- , text
-  -- , aeson
-  -- , hashable
-  -- , unordered-containers
-  -- , async
-  -- , parallel
+             , transformers
+             , mtl
+             , containers
+             , bytestring
+             , stm
+             , template-haskell
+             , text
+             , async
+
+             , deepseq
+             , hashable
+             , semigroups
+
+             , pipes
+             , pipes-http
+             , pipes-bytestring
+
+             , lens
+             , exceptions
+             , aeson
+             , wreq
+             , formatting
+             -- , interpolatedstring-perl6
+             , lens-aeson
+             , base64-bytestring             
+             -- , portaudio
+             , aeson-qq
+             , turtle
+             -- , system-filepath
+             , string-conv
+             -- , unordered-containers
+             -- , async
+             -- , parallel
+             -- , free
+             , random
+               
 
 
 executable example-speech-recognition
