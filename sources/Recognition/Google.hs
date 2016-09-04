@@ -30,8 +30,8 @@ import Recognition.Google.Types
 
 import Network.Wreq
 import Control.Lens
-import Data.Aeson
-import Data.Aeson.Lens
+-- import Data.Aeson
+-- import Data.Aeson.Lens
 import Formatting
 import System.Random
 import qualified Data.ByteString.Lazy as BL
@@ -40,20 +40,51 @@ import qualified Data.ByteString.Lazy as BL
 -- import qualified Data.ByteString.Char8 as BS8
 import qualified Data.Text as T
 
-import Data.Int (Int64)
+import Data.Word
+--import Control.Concurrent
+import Control.Concurrent.Async
 
 --------------------------------------------------------------------------------
 
 {-
 
+https://hackage.haskell.org/package/wreq-0.4.1.0/docs/Network-Wreq.html
+
+
 ("X-Request-URL","POST https://www.google.com:443/speech-api/fullduplex/v1/up?client=chrome&pFilter=0&interim=True&continuous=True&lang=en-US&pair=703e4035de67d5a7&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw")
 
+
+get "https://www.google.com/speech-api/full-duplex/v1/down?pair=25904992c8187b9"
+
+
+http://docs.python-requests.org/en/master/user/advanced/
+
+requests.Session().get("https://www.google.com/speech-api/full-duplex/v1/down?pair=25904992c8187b9",stream=True)
+
+What does this do? requests.Session().get(_,stream=True)
+
+requests stream=True
+
+
 -}
+example_Recognition_Google :: IO()
 example_Recognition_Google = do
  (downstream, upstream) <- getDefaultDuplexSpeech
- let request = upstreamRequest 16000 upstream
- response <- postWith request upstreamUrl (""::BL.ByteString)
- print response
+
+ d'thread <- async $ do
+     let d'request = downstreamRequest downstream
+     d'response <- getWith d'request downstreamUrl
+     print d'response
+
+ -- wait d'thread
+
+ u'thread <- async $ do
+     let flacFile = "python/test.flac"
+     let u'request = upstreamRequest 16000 upstream
+     u'response <- postWith u'request upstreamUrl (partFileSource "" flacFile) -- nullAudio --(""::BL.ByteString)
+     print u'response
+
+ traverse_ wait [d'thread, u'thread]
 
 -- requestUploadSpeech :: SampleRate -> UploadSpeech -> (String,Options)
 -- requestUploadSpeech sampleRate UploadSpeech{..} = (url,options)
@@ -72,7 +103,17 @@ example_Recognition_Google = do
 
 {-|
 
+-}
+downstreamRequest :: DownloadSpeech -> Options
+downstreamRequest DownloadSpeech{..} = defaults
+  & header "Transfer-Encoding" .~ ["chunked"]
+  & param "pair"               .~ [T.pack _DownloadSpeech_pair]
+
+{-|
+
 'SampleRate' depends on the audio, the 'UploadSpeech' is independent of the audio.
+
+https://www.google.com/speech-api/full-duplex/v1/up?key=%(key)s&pair=%(pair)s&lang=en-US&client=chromium&continuous&interim&pFilter=0
 
 -}
 upstreamRequest :: SampleRate -> UploadSpeech -> Options
@@ -90,9 +131,8 @@ upstreamRequest sampleRate UploadSpeech{..} = defaults
    & param "client"             .~ [T.pack _UploadSpeech_client]
 -- & param ""                   .~ [_UploadSpeech_]
 
-
-
-
+-- paramBool :: String -> Lens' Options Bool
+-- paramBool k v = 
 
 --------------------------------------------------------------------------------
 
@@ -103,7 +143,7 @@ Generates a random number, 64-bit, in hexadecimal.
 -}
 getDefaultDuplexSpeech :: IO DuplexSpeech
 getDefaultDuplexSpeech = do
-  i :: Int64 <- randomIO -- hex(random.getrandbits(64))[2:-1]
+  i :: Word64 <- randomIO -- non-negative
   let s = formatToString hex i
   return $ defaultDuplexSpeech s
 
@@ -130,7 +170,7 @@ nullAudio = BL.pack [0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0]
 --------------------------------------------------------------------------------
 
 upstreamUrl :: String
-upstreamUrl = "https://www.google.com/speech-api/fullduplex/v1/up"
+upstreamUrl = "https://www.google.com/speech-api/full-duplex/v1/up"
 
 -- upstreamHeaders :: SampleRate -> Headers
 -- upstreamHeaders sampleRate = defaults
@@ -138,7 +178,7 @@ upstreamUrl = "https://www.google.com/speech-api/fullduplex/v1/up"
 --   & header "Transfer-Encoding" .~ ["chunked"]
 
 downstreamUrl :: String
-downstreamUrl = "https://www.google.com/speech-api/fullduplex/v1/down"
+downstreamUrl = "https://www.google.com/speech-api/full-duplex/v1/down"
 
 -- downstreamHeaders :: Headers
 -- downstreamHeaders = defaults

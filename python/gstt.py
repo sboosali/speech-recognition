@@ -98,9 +98,13 @@ class GoogleSpeechAPI(object):
         pair = self.getPair()
         upstream_url = self.upstream_url % {"pair": pair, "key": self.api_key}
         downstream_url = self.downstream_url % {"pair": pair, "key": self.api_key}
+
+        print 'DOWN url =', downstream_url
+        print 'UP url =', upstream_url
+
         self.file.seek(0)
-        self.upsession = requests.Session()
-        self.downsession = requests.Session()
+        self.upsession = requests
+        self.downsession = requests
         self.upstream_thread = Thread(target=self.upstream, args=(upstream_url,))
         self.downstream_thread = Thread(target=self.downstream, args=(downstream_url,))
 
